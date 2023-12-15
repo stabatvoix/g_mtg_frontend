@@ -1,5 +1,4 @@
 import React, { lazy, Suspense } from 'react'
-import styles from './ProjectCard.module.scss'
 import { FCC } from 'src/types'
 import { Card, Typography } from 'antd'
 import { NavLink } from 'react-router-dom'
@@ -10,14 +9,14 @@ const { Title, Paragraph } = Typography
 interface ProjectCardProps {
   projectId: number
   title?: string
-  productType?: string
+  product?: string
   description?: string
   onClick?: () => void
 }
 export const ProjectCard: FCC<ProjectCardProps> = ({
   projectId,
   title,
-  productType,
+  product,
   description = '',
   onClick,
 }) => {
@@ -31,7 +30,7 @@ export const ProjectCard: FCC<ProjectCardProps> = ({
       >
         <div>
           <Paragraph strong>Тип продукта: </Paragraph>
-          <Paragraph>{productType}</Paragraph>
+          <Paragraph>{product}</Paragraph>
           <Paragraph strong>Описание: </Paragraph>
           <Suspense fallback={<div>Loading...</div>}>
             <Paragraph

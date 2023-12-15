@@ -1,75 +1,57 @@
 import React from 'react'
-import styles from './ProjectsPage.module.scss'
 import { FCC } from 'src/types'
 import PageWrapper from '../../../components/_base/PageWrapper/PageWrapper'
 import { useTranslation } from 'src/hooks'
 import ProjectCard from '../../../components/_base/ProjectCard/ProjectCard'
-import { Col, Row } from 'antd'
+import { Col, Form, Row } from 'antd'
 import ProjectCreation from 'src/components/projects/ProjectCreateModal/ProjectCreateModal'
-import { ProjectFields } from 'src/models'
+import { ProjectFields, ProjectsModel } from 'src/models'
+import { useInfinityFetchData } from 'src/services/base/useInfinityFetchData'
+import { MoreBtn } from 'src/components'
+import { useCreateItem } from 'src/services/base/hooks'
 
-interface ProjectsPageProps {
-  prop?: any
-}
+const MODEL = ProjectsModel
 
-const projectsFakeData = [
-  {
-    id: 1,
-    title: 'Проект 1',
-    productType: 'Тип продукта 1',
-    description: 'Описание проекта 1',
-  },
-  {
-    id: 2,
-    title: 'Проект 2',
-    productType: 'Тип продукта 2',
-    description: 'Описание проекта 2',
-  },
-  {
-    id: 3,
-    title: 'Проект 3',
-    productType: 'Тип продукта 3',
-    description: 'Описание проекта 3',
-  },
-  {
-    id: 4,
-    title: 'Проект 4',
-    productType: 'Тип продукта 4',
-    description: 'Описание проекта 4',
-  },
-  {
-    id: 5,
-    title: 'Проект 5',
-    productType: 'Тип продукта 5',
-    description:
-      'Понял вас. Давайте обновим компонент, чтобы описание было в формате ReactMarkdown, а высота карточки была фиксированной. Для этого мы будем использовать react-markdown для визуализации описания внутри карточки. Пожалуйста, убедитесь, что вы установили библиотеку react-markdown перед использованием этого компонента.' +
-      'Понял вас. Давайте обновим компонент, чтобы описание было в формате ReactMarkdown, а высота карточки была фиксированной. Для этого мы будем использовать react-markdown для визуализации описания внутри карточки. Пожалуйста, убедитесь, что вы установили библиотеку react-markdown перед использованием этого компонента.',
-  },
-]
-
-export const ProjectsPage: FCC<ProjectsPageProps> = ({ prop }) => {
-  const [data, setData] = React.useState(projectsFakeData)
+export const ProjectsPage: FCC = () => {
   const { t } = useTranslation()
   const [isModalVisible, setIsModalVisible] = React.useState(false)
+  const [form] = Form.useForm()
 
-  const onCreateClick = (values: ProjectFields) => {
-    const newProject = {
-      id: data.length + 1,
-      title: values.name,
-      productType: values.productType,
-      description: values.description,
-    }
-    setData([...data, newProject])
-    setIsModalVisible(false)
+  const {
+    dataCount,
+    rowData,
+    fetchNextPage,
+    refetch,
+    isFetching,
+    isLoading,
+    hasNextPage,
+  }: any = useInfinityFetchData({
+    model: MODEL,
+    defFilters: {},
+  })
+
+  const { mutate: create, isLoading: isCreating } = useCreateItem(MODEL)
+
+  const handleCreate = (values: ProjectFields) => {
+    create(values, {
+      onSuccess: () => {
+        form.resetFields()
+        refetch()
+        setIsModalVisible(false)
+      },
+    })
   }
 
   return (
     <PageWrapper
       title={t('Проекты')}
+      itemsCount={dataCount}
       actions={
         <ProjectCreation
+          form={form}
+          isLoading={isCreating}
           isVisible={isModalVisible}
-          onCreate={onCreateClick}
+          onCreate={handleCreate}
           showModal={setIsModalVisible}
         />
       }
@@ -81,19 +63,26 @@ export const ProjectsPage: FCC<ProjectsPageProps> = ({ prop }) => {
       ]}
     >
       <Row gutter={[24, 24]}>
-        {data.map((project, index) => (
+        {rowData?.map((project: ProjectFields, index: number) => (
           <Col key={index} xs={24} md={12} xl={8}>
             <ProjectCard
               key={project.id}
               projectId={project.id}
-              title={project.title}
-              productType={project.productType}
+              title={project.name}
+              product={project.product.name}
               description={project.description}
-              onClick={() => console.log('onClick')}
             />
           </Col>
         ))}
       </Row>
+      {hasNextPage && (
+        <MoreBtn
+          isLoading={isFetching || isLoading}
+          onMore={() => {
+            fetchNextPage()
+          }}
+        />
+      )}
     </PageWrapper>
   )
 }

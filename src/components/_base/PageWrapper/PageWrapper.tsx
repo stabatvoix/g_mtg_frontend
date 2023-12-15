@@ -1,8 +1,9 @@
 import React from 'react'
 import styles from './PageWrapper.module.scss'
 import { FCC } from 'src/types'
-import { Breadcrumb, Col, Layout, Row, Typography } from 'antd'
+import { Badge, Breadcrumb, Col, Layout, Row, Space, Typography } from 'antd'
 import { HomeOutlined, UserOutlined } from '@ant-design/icons'
+import EmptyData from '../EmptyData/EmptyData'
 
 const { Content } = Layout
 const { Title, Text } = Typography
@@ -15,6 +16,7 @@ interface PageWrapperProps {
   title?: string
   description?: string
   actions?: React.ReactNode
+  itemsCount?: number
   breadcrumbs?: BreadCrumbItemProps[]
 }
 
@@ -24,6 +26,7 @@ export const PageWrapper: FCC<PageWrapperProps> = ({
   children,
   description,
   breadcrumbs = [],
+  itemsCount,
 }) => {
   const breadcrumbItems = [
     {
@@ -49,14 +52,17 @@ export const PageWrapper: FCC<PageWrapperProps> = ({
           >
             <Row gutter={[16, 16]} justify={'space-between'}>
               <Col xs={24} xl={12}>
-                <Title
-                  level={2}
-                  style={{
-                    margin: 0,
-                  }}
-                >
-                  {title}
-                </Title>
+                <Space direction={'horizontal'} size={10}>
+                  <Title
+                    level={2}
+                    style={{
+                      margin: 0,
+                    }}
+                  >
+                    {title}
+                  </Title>
+                  {itemsCount ? <Badge count={itemsCount} /> : null}
+                </Space>
               </Col>
               <Col>{actions}</Col>
             </Row>
@@ -64,6 +70,7 @@ export const PageWrapper: FCC<PageWrapperProps> = ({
               <Text type='secondary'>{description}</Text>
             </div>
           </div>
+          {itemsCount === 0 ? <EmptyData /> : null}
           {children}
         </Content>
       </Layout>

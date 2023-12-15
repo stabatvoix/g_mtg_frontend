@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect, Suspense } from 'react'
 import ReactMarkdown from 'react-markdown'
+import { DeleteOutlined } from '@ant-design/icons'
+import { useTranslation } from 'src/hooks'
 const MDEditor = React.lazy(() => import('@uiw/react-md-editor'))
 interface EditableMarkdownProps {
   text: string
@@ -9,13 +11,19 @@ const EditableMarkdown: React.FC<EditableMarkdownProps> = ({
   text,
   onSave,
 }) => {
+  console.log('EditableMarkdown', text)
+  const { tF } = useTranslation()
+  const defText = text ? text : tF('Нажмите, чтобы добавить текст')
   const [isEditing, setEditing] = useState(false)
   const [content, setContent] = useState<string>(text)
-  const [markdown, setMarkdown] = useState<string>(text)
+  const [markdown, setMarkdown] = useState<string>(defText)
   const [isHovered, setHovered] = useState(false)
 
   const markdownRef = useRef<HTMLDivElement>(null)
 
+  useEffect(() => {
+    setMarkdown(defText)
+  }, [defText])
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -36,7 +44,7 @@ const EditableMarkdown: React.FC<EditableMarkdownProps> = ({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [isEditing, content])
+  }, [isEditing, content, onSave])
 
   const handleEdit = () => {
     setEditing(true)
@@ -45,7 +53,6 @@ const EditableMarkdown: React.FC<EditableMarkdownProps> = ({
   const handleChange = (value?: string) => {
     setContent(value || '')
   }
-
   return (
     <div
       ref={markdownRef}

@@ -65,15 +65,22 @@ export const useFetchItems = <T = any>(
  * @param model
  * @param qKey - ключ сущности из rootReducer и ключ запроса для react-query
  * @param id
+ * @param filter
  * @param options
  */
-export const useFetchOneItem = (
-  model: typeof BaseModel,
-  id: string | number | undefined,
-  options?: UseQueryOptions & { doNotNotify?: boolean },
-  filter?: Record<string, any>,
+export const useFetchOneItem = ({
+  model,
+  id,
+  options,
+  filter,
+  qKey,
+}: {
+  model: typeof BaseModel
+  id: string | number | undefined
+  options?: UseQueryOptions & { doNotNotify?: boolean }
+  filter?: Record<string, any>
   qKey?: string
-) => {
+}) => {
   const { notifyError } = useNotification()
   const url = model.url()
   const queryKey = qKey || model.modelName

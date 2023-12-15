@@ -4,13 +4,14 @@ export interface ProjectFields extends BaseModelProps {
   id: number
   name: string
   description: string
-  productType: string
+  product: any
+  prompt: string
 }
 
 export class ProjectsModel extends BaseModel {
   static modelName = 'projects'
 
   static url() {
-    return '/projects'
+    return 'g-gmp/projects/'
   }
 }

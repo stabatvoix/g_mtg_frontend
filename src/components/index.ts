@@ -22,6 +22,7 @@ export * from './_base/CurrentUser'
 export * from './_base/MoreBtn'
 export * from './_base/EmptyData'
 export * from './_base/SelectSearchable'
+export * from './_base/GoToEntityDetail'
 
 // typography components
 export * from './_typography/Text'

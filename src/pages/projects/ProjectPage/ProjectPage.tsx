@@ -9,6 +9,7 @@ import { Outlet, useParams } from 'react-router-dom'
 import { ChannelActionsRoutesNames } from 'src/routes/projectsRoutes'
 import { useFetchOneItem, useUpdateItem } from 'src/services/base/hooks'
 import { ProjectsModel } from 'src/models'
+import GoToEntityDetail from '../../../components/_base/GoToEntityDetail/GoToEntityDetail'
 const EditableMarkdown = React.lazy(
   () => import('src/components/_base/EditableMarkdown/EditableMarkdown')
 )
@@ -120,6 +121,14 @@ export const ProjectPage: FCC<ProjectPageProps> = ({ prop }) => {
                 />
               </Suspense>
             ) : null}
+          </Col>
+        </Row>
+        <Row gutter={16}>
+          <Col xs={24}>
+            <Title level={4}>{t('Продукт')}</Title>
+          </Col>
+          <Col xs={24} xl={12}>
+            <GoToEntityDetail text={data?.data?.product?.name} url={''} />
           </Col>
         </Row>
         <Row gutter={16} style={{ marginTop: '16px' }}>

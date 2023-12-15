@@ -1,0 +1,11 @@
+/dist/**
+/node_modules/**
+/coverage/**
+/build/**
+/docs/**
+/README.md
+/yarn.lock
+/package.json
+!.hygen.js
+!.hygen
+/src/submodules/cicada-map/

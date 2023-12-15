@@ -1,0 +1,116 @@
+.only-default:
+  only:
+    - master
+    - develop
+    - merge_requests
+    - tags
+
+stages:
+  - start
+  - build_and_push
+  - build_and_push_k3s
+  - finish
+
+
+start_ci:
+  image: python:3.12.0b1-alpine3.18
+  stage: start
+  script:
+    - python3 $CI_NOTIFY_PYTHON ⏳
+  only:
+    - merge_requests
+
+# lint:
+#   image: node:16-alpine
+#   stage: lint
+#   only:
+#     - merge_requests
+#   script:
+#     - npm ci
+#     - npm run lint
+
+
+build_and_push_nginx:
+  extends: .only-default
+  image: registry.apt.dev/images/docker
+  stage: build_and_push
+  # only:
+  #   - develop
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+    context: ./
+    build_image: nginx
+  services:
+    - name: registry.apt.dev/images/docker-dind
+      alias: docker
+  before_script:
+    - cat $APT_CA_CRT >> /etc/ssl/certs/ca-certificates.crt
+    - mkdir -p /etc/docker/certs.d/$CI_REGISTRY
+    - cat $APT_CA_CRT >> /etc/docker/certs.d/$CI_REGISTRY/ca.crt
+    - apk add git
+    - timeout 10s sh -c 'until docker info; do sleep 1; done'
+  script:
+    - echo -n $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - echo "GITLAB_ACCESS_USER_AND_TOKEN='gitlab-ci-token $CI_JOB_TOKEN'" > .sec
+    # - git config -f .gitmodules submodule.src/submodules/cicada-map.url https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.apt.dev/landing/cicada-map.git
+    # - git  -c http.sslVerify=false submodule sync
+    # - git  -c http.sslVerify=false submodule update --init
+    - docker pull $CI_REGISTRY_IMAGE/$build_image:develop || true
+    - export DOCKER_BUILDKIT=1
+    - docker build --cache-from $CI_REGISTRY_IMAGE:develop
+                   --tag $CI_REGISTRY_IMAGE/$build_image:$CI_COMMIT_REF_SLUG
+                   --secret id=build-sec,src=.sec
+                   --build-arg BUILDKIT_INLINE_CACHE=1
+                   --file=./nginx/Dockerfile .
+    - docker push $CI_REGISTRY_IMAGE/$build_image:$CI_COMMIT_REF_SLUG
+
+
+build_and_push_nginx_k3s:
+  extends: .only-default
+  image: registry.apt.dev/images/docker
+  stage: build_and_push_k3s
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+    context: ./
+    build_image: nginx
+  services:
+    - name: registry.apt.dev/images/docker-dind
+      alias: docker
+  before_script:
+    - cat $APT_CA_CRT >> /etc/ssl/certs/ca-certificates.crt
+    - mkdir -p /etc/docker/certs.d/$CI_REGISTRY
+    - cat $APT_CA_CRT >> /etc/docker/certs.d/$CI_REGISTRY/ca.crt
+    - apk add git
+    - timeout 10s sh -c 'until docker info; do sleep 1; done'
+  script:
+    - echo -n $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - echo "GITLAB_ACCESS_USER_AND_TOKEN='gitlab-ci-token $CI_JOB_TOKEN'" > .sec
+    # - git config -f .gitmodules submodule.src/submodules/cicada-map.url https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.apt.dev/landing/cicada-map.git
+    # - git  -c http.sslVerify=false submodule sync
+    # - git  -c http.sslVerify=false submodule update --init
+    - docker pull $CI_REGISTRY_IMAGE/$build_image:develop || true
+    - export DOCKER_BUILDKIT=1
+    - docker build --cache-from $CI_REGISTRY_IMAGE:develop
+                   --tag $CI_REGISTRY_IMAGE/$build_image:k3s-$CI_COMMIT_REF_SLUG
+                   --secret id=build-sec,src=.sec
+                   --build-arg BUILDKIT_INLINE_CACHE=1
+                   --file=./nginx/Dockerfile.k3s .
+    - docker push $CI_REGISTRY_IMAGE/$build_image:k3s-$CI_COMMIT_REF_SLUG
+
+
+finish_ci:
+  image: python:3.12.0b1-alpine3.18
+  stage: finish
+  script:
+    - python3 $CI_NOTIFY_PYTHON ✅
+  only:
+    - merge_requests
+
+notify_error:
+  image: python:3.12.0b1-alpine3.18
+  stage: finish
+  script:
+    - python3 $CI_NOTIFY_PYTHON ❌
+  only:
+    - merge_requests
+  when: on_failure

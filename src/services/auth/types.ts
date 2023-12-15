@@ -1,7 +1,6 @@
 export interface LoginValuesTypes {
   email: string
   password: string
-  captchaToken: string
 }
 
 export interface SetPasswordValuesTypes {

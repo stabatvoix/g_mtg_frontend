@@ -1,9 +1,5 @@
 import React, { lazy, Suspense, useContext } from 'react'
-import {
-  AxiosInterceptor,
-  CurrentUserContext,
-  LayoutLoading,
-} from 'src/components'
+import { CurrentUserContext, LayoutLoading } from 'src/components'
 
 const AppRouter = lazy(() => import('src/containers/AppRouter/AppRouter'))
 
@@ -19,11 +15,9 @@ export const App: React.FC = () => {
   }
 
   return (
-    <AxiosInterceptor>
-      <Suspense fallback={<LayoutLoading />}>
-        {isAuthorized ? <AppRouter /> : <NotAuthAppRouter />}
-      </Suspense>
-    </AxiosInterceptor>
+    <Suspense fallback={<LayoutLoading />}>
+      {isAuthorized ? <AppRouter /> : <NotAuthAppRouter />}
+    </Suspense>
   )
 }
 

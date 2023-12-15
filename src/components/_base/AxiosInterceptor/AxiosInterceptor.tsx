@@ -1,16 +1,17 @@
 import { ReactElement, useEffect } from 'react'
-import Cookie from 'js-cookie'
 import { AxiosResponse } from 'axios'
 import apiClient from 'src/plugins/apiClient'
 import { useNotification } from 'src/components'
+import { BASIC_AUTH_STORAGE_KEY } from 'src/services/auth/AuthServices'
 
 export const AxiosInterceptor = ({ children }: { children: ReactElement }) => {
   const { notifyError } = useNotification()
-
   useEffect(() => {
     apiClient.interceptors.request.use(
       function (request: any) {
-        request.headers['X-CSRFToken'] = Cookie.get('csrftoken')
+        request.headers['Authorization'] = `Basic ${localStorage.getItem(
+          BASIC_AUTH_STORAGE_KEY
+        )}`
         return request
       },
       function (error: any) {

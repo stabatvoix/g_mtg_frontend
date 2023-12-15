@@ -6,13 +6,15 @@ import { useTranslation } from 'src/hooks'
 
 const { Header, Content } = Layout
 
-interface LoginPageProps {
-  prop?: any
-}
-export const LoginPage: FCC<LoginPageProps> = ({ prop }) => {
+export const LoginPage: FCC = () => {
   const { t } = useTranslation()
   return (
-    <Layout className='layout'>
+    <Layout
+      className='layout'
+      style={{
+        height: '100vh',
+      }}
+    >
       <Header style={{ display: 'flex', alignItems: 'center' }}>
         <span>ГЕНА</span>
       </Header>

@@ -5,13 +5,15 @@ import {
 } from 'src/services/auth/types'
 
 const userApi = 'user/users'
-const usersProfileApi = 'user/profiles'
+
+export const BASIC_AUTH_STORAGE_KEY = 'auth'
+export const USER_STORAGE_KEY = 'user'
 
 export default class AuthServices {
-  static login(url: string, credentials: LoginValuesTypes) {
+  static login(url: string, credentials?: LoginValuesTypes, options?: any) {
     return new Promise((resolve, reject) => {
       apiClient
-        .post(`${userApi}/${url}/`, { ...credentials })
+        .post(`${userApi}/${url}/`, { ...credentials }, options)
         .then((response: any) => {
           return resolve(response)
         })
@@ -25,7 +27,7 @@ export default class AuthServices {
    */
   static async getUserInfo() {
     try {
-      const res = await apiClient.get(`${usersProfileApi}/get-info/`)
+      const res = await apiClient.get(`${userApi}/get-info/`)
       if (res.status === 200) {
         localStorage.setItem('user', JSON.stringify(res.data))
       }

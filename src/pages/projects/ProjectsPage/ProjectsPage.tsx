@@ -81,8 +81,8 @@ export const ProjectsPage: FCC<ProjectsPageProps> = ({ prop }) => {
       ]}
     >
       <Row gutter={[24, 24]}>
-        {data.map((project) => (
-          <Col xs={24} md={12} xl={8}>
+        {data.map((project, index) => (
+          <Col key={index} xs={24} md={12} xl={8}>
             <ProjectCard
               key={project.id}
               projectId={project.id}

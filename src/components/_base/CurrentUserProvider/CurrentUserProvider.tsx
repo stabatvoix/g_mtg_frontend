@@ -1,11 +1,11 @@
 import React, { createContext, useMemo } from 'react'
 import { FCC } from 'src/types'
 import { useUserGetInfo } from 'src/services/auth/hooks'
-import { ProfilesModelProps } from 'src/models'
-import { getFromLocalStorage } from 'src/hooks'
+import { UsersModelProps } from 'src/models'
+import { BASIC_AUTH_STORAGE_KEY } from 'src/services/auth/AuthServices'
 
 interface CurrentUserProviderProps {
-  currentUserInfo?: ProfilesModelProps
+  currentUserInfo?: UsersModelProps
   currentUserRoles?: Map<string, string[]>
   isAuthorized?: boolean
   isLoading?: boolean
@@ -23,12 +23,9 @@ export const CurrentUserProvider: FCC<CurrentUserProviderProps> = ({
       refetchOnWindowFocus: false,
     }
   )
-  const login = localStorage.getItem('login')
-  const password = localStorage.getItem('password')
-  const isAuthorized = useMemo(
-    () => Boolean(login && password),
-    [login, password]
-  )
+  console.log(data)
+  const basicAuth = localStorage.getItem(BASIC_AUTH_STORAGE_KEY)
+  const isAuthorized = useMemo(() => Boolean(basicAuth), [basicAuth])
 
   return (
     <CurrentUserContext.Provider

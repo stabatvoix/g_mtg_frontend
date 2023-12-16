@@ -1,3 +1,4 @@
+import React from 'react'
 import { RadarChartOutlined } from '@ant-design/icons'
 import { lazy } from 'react'
 import { useTranslation } from 'src/hooks'

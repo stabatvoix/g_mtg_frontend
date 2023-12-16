@@ -1,42 +1,57 @@
 import React, { lazy, Suspense } from 'react'
 import { FCC } from 'src/types'
-import { Card, Typography } from 'antd'
+import { Button, Card, Typography } from 'antd'
 import { NavLink } from 'react-router-dom'
+import { DeleteOutlined } from '@ant-design/icons'
+import { ProductsRoutesNames } from 'src/routes/productsRoutes'
 const ReactMarkdown = lazy(() => import('react-markdown'))
 
 const { Title, Paragraph } = Typography
 
-interface ProjectCardProps {
-  projectId: number
+interface ProductCardProps {
+  id: number
   title?: string
   product?: string
   description?: string
   onClick?: () => void
+  onDelete?: (id: number) => void
 }
-export const ProjectCard: FCC<ProjectCardProps> = ({
-  projectId,
+export const ProductCard: FCC<ProductCardProps> = ({
+  id,
   title,
-  product,
   description = '',
   onClick,
+  onDelete,
 }) => {
   return (
-    <NavLink to={`/projects/${projectId}`}>
+    <NavLink to={`/${ProductsRoutesNames.PRODUCTS}/${id}`}>
       <Card
-        title={<Title level={4}>{title}</Title>}
+        title={
+          <Title ellipsis level={4}>
+            {title}
+          </Title>
+        }
         style={{ width: '100%', marginBottom: 16, height: '350px' }} // Задаем фиксированную высоту
+        extra={
+          <Button
+            type={'text'}
+            icon={<DeleteOutlined />}
+            onClick={(e) => {
+              e.preventDefault()
+              onDelete?.(id)
+            }}
+          />
+        }
         hoverable
         onClick={onClick}
       >
         <div>
-          <Paragraph strong>Тип продукта: </Paragraph>
-          <Paragraph>{product}</Paragraph>
           <Paragraph strong>Описание: </Paragraph>
           <Suspense fallback={<div>Loading...</div>}>
             <Paragraph
               style={{
                 overflow: 'scroll',
-                height: '150px',
+                height: '200px',
               }}
             >
               <ReactMarkdown>{description}</ReactMarkdown>
@@ -48,6 +63,6 @@ export const ProjectCard: FCC<ProjectCardProps> = ({
   )
 }
 
-ProjectCard.displayName = 'ProjectCard'
+ProductCard.displayName = 'ProductCard'
 
-export default ProjectCard
+export default ProductCard

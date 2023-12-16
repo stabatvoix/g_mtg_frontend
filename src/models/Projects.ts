@@ -14,4 +14,8 @@ export class ProjectsModel extends BaseModel {
   static url() {
     return 'g-gmp/projects/'
   }
+
+  static addSalesChannelsUrl(id: number) {
+    return `${this.url()}${id}/add-sales-channels/`
+  }
 }

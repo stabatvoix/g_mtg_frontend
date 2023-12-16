@@ -1,5 +1,5 @@
 import React from 'react'
-import { RadarChartOutlined } from '@ant-design/icons'
+import { SnippetsOutlined } from '@ant-design/icons'
 import { lazy } from 'react'
 import { useTranslation } from 'src/hooks'
 import { Link } from 'src/routes/routesList'
@@ -19,8 +19,15 @@ export const ProductsRoutes = () => {
       title: t('Продукты'),
       to: ProductsRoutesNames.PRODUCTS,
       component: <Products />,
-      icon: <RadarChartOutlined />,
+      icon: <SnippetsOutlined />,
       isNavLink: true,
+    },
+    {
+      title: t('Продукт'),
+      to: `/${ProductsRoutesNames.PRODUCTS}/:id`,
+      component: <Products />,
+      icon: undefined,
+      isNavLink: false,
     },
   ] as Link[]
 }

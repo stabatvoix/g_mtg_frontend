@@ -1,10 +1,10 @@
 import React from 'react'
 import { screen } from '@testing-library/react'
 import { render } from 'src/test-utils'
-import { ProjectCard } from '../'
+import { ProjectCreateForm } from '../index'
 
 test('renders component successfully', () => {
-  render(<ProjectCard  />)
-  const element = screen.getByTestId('test-ProjectCard')
+  render(<ProjectCreateForm />)
+  const element = screen.getByTestId('test-ProjectCreateForm')
   expect(element).toBeInTheDocument()
 })

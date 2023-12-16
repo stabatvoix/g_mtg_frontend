@@ -11,7 +11,6 @@ const EditableMarkdown: React.FC<EditableMarkdownProps> = ({
   text,
   onSave,
 }) => {
-  console.log('EditableMarkdown', text)
   const { tF } = useTranslation()
   const defText = text ? text : tF('Нажмите, чтобы добавить текст')
   const [isEditing, setEditing] = useState(false)

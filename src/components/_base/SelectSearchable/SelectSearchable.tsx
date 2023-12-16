@@ -8,16 +8,18 @@ import { DownloadOutlined } from '@ant-design/icons'
 
 const { Option } = Select
 
-interface MySelectProps {
+interface SelectSearchableProps {
+  mode?: 'multiple' | 'tags'
   value?: string | number | null
   model: typeof BaseModel
   onChange?: (value: string | number | null) => void
 }
 
-export const SelectSearchable: React.FC<MySelectProps> = ({
+export const SelectSearchable: React.FC<SelectSearchableProps> = ({
   onChange,
   value,
   model,
+  mode,
 }) => {
   const { t } = useTranslation()
 
@@ -50,6 +52,7 @@ export const SelectSearchable: React.FC<MySelectProps> = ({
     <Select
       value={value}
       showSearch
+      mode={mode}
       placeholder={t('Выбрать')}
       defaultActiveFirstOption={false}
       filterOption={false}

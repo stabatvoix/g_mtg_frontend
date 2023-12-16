@@ -7,10 +7,17 @@ export interface BaseModelProps {
   permissionRules: PermissionRulesProps
   contentType: string | number
 }
+
+export const G_GMP_APP_URL = 'g-gmp'
+
 export class BaseModel {
   static modelName = 'base'
   static url() {
     return ''
+  }
+
+  static detailUrl(id: string | number) {
+    return `${this.url()}${id}/`
   }
   static stageTransitionUrl() {
     return `${this.url()}/multiple-stage-transition/`

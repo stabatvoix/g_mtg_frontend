@@ -1,89 +1,40 @@
 import React from 'react'
 import { FCC } from 'src/types'
-import PageWrapper from '../../../components/_base/PageWrapper/PageWrapper'
 import { useTranslation } from 'src/hooks'
-import ProjectCard from '../../../components/_base/ProjectCard/ProjectCard'
-import { Col, Form, Row } from 'antd'
-import ProjectCreation from 'src/components/projects/ProjectCreateModal/ProjectCreateModal'
+import { ProjectCard, ProjectCreateForm } from 'src/components/projects'
+import { Col } from 'antd'
 import { ProjectFields, ProjectsModel } from 'src/models'
-import { useInfinityFetchData } from 'src/services/base/useInfinityFetchData'
-import { MoreBtn } from 'src/components'
-import { useCreateItem } from 'src/services/base/hooks'
+import { EntityItemsPageWrapperPage } from 'src/components'
+import { ProjectsRoutesNames } from 'src/routes/projectsRoutes'
 
 const MODEL = ProjectsModel
-
 export const ProjectsPage: FCC = () => {
-  const { t } = useTranslation()
-  const [isModalVisible, setIsModalVisible] = React.useState(false)
-  const [form] = Form.useForm()
-
-  const {
-    dataCount,
-    rowData,
-    fetchNextPage,
-    refetch,
-    isFetching,
-    isLoading,
-    hasNextPage,
-  }: any = useInfinityFetchData({
-    model: MODEL,
-    defFilters: {},
-  })
-
-  const { mutate: create, isLoading: isCreating } = useCreateItem(MODEL)
-
-  const handleCreate = (values: ProjectFields) => {
-    create(values, {
-      onSuccess: () => {
-        form.resetFields()
-        refetch()
-        setIsModalVisible(false)
-      },
-    })
-  }
+  const { tF } = useTranslation()
+  const [PageTitle] = React.useState(tF('Проекты'))
 
   return (
-    <PageWrapper
-      title={t('Проекты')}
-      itemsCount={dataCount}
-      actions={
-        <ProjectCreation
-          form={form}
-          isLoading={isCreating}
-          isVisible={isModalVisible}
-          onCreate={handleCreate}
-          showModal={setIsModalVisible}
-        />
-      }
+    <EntityItemsPageWrapperPage
+      pageTitle={PageTitle}
+      model={MODEL}
       breadcrumbs={[
         {
-          href: '/projects',
-          title: t('Проекты'),
+          href: `/${ProjectsRoutesNames.PROJECTS}`,
+          title: PageTitle,
         },
       ]}
-    >
-      <Row gutter={[24, 24]}>
-        {rowData?.map((project: ProjectFields, index: number) => (
-          <Col key={index} xs={24} md={12} xl={8}>
-            <ProjectCard
-              key={project.id}
-              projectId={project.id}
-              title={project.name}
-              product={project.product.name}
-              description={project.description}
-            />
-          </Col>
-        ))}
-      </Row>
-      {hasNextPage && (
-        <MoreBtn
-          isLoading={isFetching || isLoading}
-          onMore={() => {
-            fetchNextPage()
-          }}
-        />
+      formItemsRender={<ProjectCreateForm />}
+      itemsRender={(item: ProjectFields, onDelete) => (
+        <Col key={item.id} xs={24} md={12} xl={8}>
+          <ProjectCard
+            id={item.id}
+            title={item.name}
+            product={item.product.name}
+            description={item.description}
+            onDelete={onDelete}
+          />
+        </Col>
       )}
-    </PageWrapper>
+    />
   )
 }
 
